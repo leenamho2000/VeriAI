@@ -1,0 +1,78 @@
+{
+  "version": "4.0.0-ftc-guideline",
+  "weights": {
+    "vagueness": 0.22,
+    "language": 0.15,
+    "coverage": 0.10,
+    "temporal": 0.13,
+    "evidence_inverse": 0.30,
+    "offset_risk": 0.10
+  },
+  "thresholds": { "high": 70, "medium": 40 },
+
+  "regex": {
+    "number_unit": "(\\d+(?:[\\.,]\\d+)?)(?:\\s*)?(%|톤|t|tCO2e|kg|g|mg|µg|L|ℓ|리터|m³|㎥|m²|㎡|kWh|MWh|GWh|Wh|W|kW|MW|kWp|MJ|ppm|ppb|g\\/km|km\\/L|L\\/100km|km|m|건|대|회|개|장|병|캔|컵|그루)",
+    "year": "\\b(19|20)\\d{2}\\b",
+    "scope": "(?i)Scope\\s?(1|2|3)",
+    "url": "https?:\\/\\/[^\\s)]+",
+    "award_or_rating": "(등급|라벨|레이팅|효율등급|Energy\\s*Star|에너지소비효율등급|인증)",
+    "money": "(\\d{3,})\\s?(원|KRW|₩|USD|\\$|EUR|€)",
+    "time_phrase": "(까지|이내|매년|분기|월별|주기|단계|로드맵|마일스톤)",
+    "percent_change": "(감축|절감|감소|증가|개선|늘렸)\\s?\\d+(?:\\.\\d+)?\\s?%"
+  },
+
+  "lexicons": {
+    "vague": [
+      "친환경","지속 가능","지속가능","에코","청정","깨끗한","자연","자연과 조화","녹색",
+      "긍정적","선순환","착한","책임","포용","조화","올곧은","비전","철학","가치","혁신","혁신적",
+      "앞장","선도","노력","지향","추진","강화","확대","전환","개선","도약","미래","세대","함께","희망",
+      "지구를 위한","지구를 생각","플래닛 프렌들리","지속가능 라이프스타일", "환경을 쾌적하게",
+      "선한 영향력", "상생", "가치 소비", "필환경", "환경 친화적", "자연 친화적", "환경적으로 바람직함"
+    ],
+    "overclaim": [
+      "모든","전부","전사","전 제품","전 세계","언제나","절대","완전","100%","최고의","가장","유일","전례 없는",
+      "완벽한", "결코", "제로", "free"
+    ],
+    "future": [
+      "하겠습니다","할 예정","할 계획","목표로","달성하겠습니다","추진하겠습니다","로드맵","단계적","앞으로","나아가","~까지"
+    ],
+
+    "coverage_risky": [
+      "회사 전체","전 제품","모든 제품","브랜드 전체","전 계열사","전국 매장","전 세계","모든 부문","전체 공급망"
+    ],
+    "coverage_clarifier": [
+      "일부","특정","파일럿","시범","한정","공장","사업장","국가","제품군","라인업","제외","단","지역별",
+      "~에 한함", "운송 제외"
+    ],
+
+    "labels_greenwashing_hot": [
+      "자연 유래","자연 성분","식물성","비건","Cruelty-free","무독성","무해성","무첨가", "썩는 비닐",
+      "친환경 인증","그린 인증","Eco-friendly","Green","planet friendly","chemical-free",
+      "biodegradable","compostable","ocean-bound plastic","plastic-free","microplastic-free",
+      "생분해성", "수분해성", "물에 녹는", "바이오 플라스틱", "제로 웨이스트",
+      "오존층 보호", "오존 친화적", "오존층을 파괴하지 않는"
+    ],
+    
+    "standards": [
+      "ISO","ISO 14001","ISO 14040","ISO 14044","ISO 50001",
+      "GRI","SASB","TCFD","CDP","SBTi","RE100","PPA",
+      "LEED","BREEAM","WELL","EPD","환경성적표지","CFP","FSC","PEFC","RSPO",
+      "MSC","ASC","Fairtrade","Rainforest Alliance","Bluesign","OEKO-TEX","Energy Star","RoHS","REACH","WEEE","EPEAT","GHG Protocol"
+    ],
+    "methodology": [
+      "LCA","전과정평가","배출계수","인벤토리","시스템 경계","IPCC","GWP","Scope 1","Scope 2","Scope 3","방법론","보정", "시험결과", "시험성적서"
+    ],
+    "third_party": [
+      "검증","인증","보증","감사","제3자","외부 검증","공인","심사","어슈어런스","확인서","검증의견서"
+    ],
+
+    "offset_terms": [
+      "상쇄","오프셋","탄소크레딧","배출권","REC","재생에너지 인증서","크레딧 구매","VCS","Gold Standard","CDM","offset","carbon credit"
+    ],
+
+    "recycling": ["재활용", "리사이클링", "recyclable", "재사용", "zero waste", "제로웨이스트", "재충전", "리필", "분리배출", "해체 용이"],
+    "decomposition": ["생분해", "광분해", "퇴비가능성", "compostable", "biodegradable"],
+    "unspecified_benefits": ["에너지 절약", "에너지 절감", "자원 절약", "탄소배출 저감", "유해물질 감소"]
+  }
+}
+

@@ -1,0 +1,15 @@
+streamlit
+pandas
+numpy
+rapidfuzz
+openai
+fpdf2
+beautifulsoup4
+lxml
+pillow
+pytesseract
+plotly
+requests
+trafilatura
+shap
+matplotlib
