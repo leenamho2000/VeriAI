@@ -12,12 +12,12 @@
 1. 사용자가 텍스트를 붙여넣거나, URL을 입력하면 본문을 추출합니다.
 2. 미리 정의된 규칙(`config/ad_rules.json`, `config/report_rules.json`)에 따라  
    각 문장의 **증거성, 모호성, 범위, 시점, 언어적 위험, 오프셋 의존도** 등을 정량화합니다.
-3. 문장별로 0–100 사이의 **위험도 점수(risk)**와 **등급(High/Medium/Low)**를 부여합니다.
+3. 문장별로 0–100 사이의 **위험도 점수 risk**와 **등급 High/Medium/Low**를 부여합니다.
 4. 위험도가 높은 상위 K개 문장을 골라 OpenAI LLM에 보내,  
    - 환경 광고 모드: 왜 그린워싱 위험이 있는지, 어떤 근거가 추가되어야 하는지  
    - 일반 보고서 모드: 어떤 수치/방법/표/인용이 부족한지  
    를 JSON 형태로 받아옵니다.
-5. 전체 결과를 **대시보드(Streamlit)**로 탐색하고,  
+5. 전체 결과를 **대시보드 Streamlit**로 탐색하고,  
    **CSV / PDF 리포트**로 내보낼 수 있습니다.
 
 ---
@@ -86,3 +86,32 @@ VeriAI/
 ```
 
 ## ⚙️ 설치 (Installation)
+### 1️⃣ 저장소 클론
+
+```bash
+git clone https://github.com/USERNAME/VeriAI.git
+cd VerAI
+```
+
+> `USERNME`은 실제 깃허브 계정으로 변경하세요.
+
+### 2️⃣ 가상환경 생성 및 활성화 (권장)
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS / Linux
+source .venv/bin/activate
+```
+
+### 3️⃣ 패키지 설치
+
+```bash
+pip install -r requiremnets.txt
+```
+
+`requirements.txt`에는 대략 다음과 같은 패키지들이 포함됩니다:
+- streamlit, openai, python-dotenv
+- pandas, numpy, plotly, matplotlib, shap
+- rapidfuzz, trafilatura, fpdf, pillow 등
