@@ -88,28 +88,77 @@ It:
 
 ---
 
-## 📂 프로젝트 구조 (Folder Structure)
+## 🧱 시스템 아키텍처 (Architecture)
 
-```text
-VeriAI/
-├─ app.py           # Streamlit 메인 앱 (UI + 전체 워크플로우)
-├─ rules.py         # 문장 분할, 피처 추출, 위험도 계산 로직
-├─ llm.py           # OpenAI LLM 호출 및 JSON 응답 파싱
-├─ parsers.py       # URL에서 본문 텍스트 추출
-├─ ranker.py        # (선택) Top-K 위험 문장 선별 유틸
-├─ report.py        # PDF 리포트 생성 (FPDF 기반)
-├─ config/
-│  ├─ ad_rules.json       # 환경 광고/그린워싱용 규칙 설정
-│  └─ report_rules.json   # 일반 보고서용 규칙 설정
-├─ data/            # 샘플 데이터, 테스트용 문서 등 (필요 시)
-├─ fonts/           # 한글 폰트 파일 (PDF/그래프용)
-├─ requirements.txt
-├─ .env             # 환경 변수(로컬용, Git에는 올리지 말 것)
-├─ assets/
-│  ├─main_ui.png
-│  └─result_ui.png
-└─ README.md
-```
+VeriAI는 **규칙 기반 위험도 분석 + LLM 심층 분석**을 결합한 하이브리드 구조로 동작합니다.
+
+User Input (Text / URL)
+│
+▼
+**parsers.py**  
+- URL 입력 시 본문 크롤링 및 불필요 텍스트 제거  
+│  
+▼  
+**rules.py**  
+- 문장 분리  
+- 규칙 기반 Feature 추출  
+  (evidence, vagueness, coverage, temporal 등)  
+- 0–100 위험도(risk) 계산  
+│  
+▼  
+**llm.py**  
+- 위험 상위 K개 문장을 선별하여 LLM 요청  
+- 광고/보고서 모드에 맞는 JSON 심층 분석 결과 생성  
+│  
+▼  
+**report.py**  
+- LLM + 규칙 기반 결과 요약  
+- PDF/CSV 리포트 생성  
+│  
+▼  
+**app.py** (Streamlit UI)  
+- 입력 → 분석 → 시각화 → 리포트 다운로드 전체 플로우 제공
+
+### ✔️ 구성 요소 요약
+
+- **parsers.py** — URL 본문 텍스트 크롤링(trafilatura)  
+- **rules.py** — 규칙 기반 점수화(ad_rules.json, report_rules.json 사용)  
+- **llm.py** — OpenAI API 호출 및 JSON 응답 처리  
+- **report.py** — PDF 리포트 생성(FPDF)  
+- **app.py** — Streamlit UI 및 전체 워크플로우 제어
+
+---
+
+## 🛠️ 기술 스택 (Tech Stack)
+
+### 🔹 Language & Environment
+- Python 3.10+
+- Virtual Environment (venv)
+
+### 🔹 Framework & UI
+- **Streamlit** — 웹 UI 및 결과 시각화
+- **Plotly / Matplotlib** — 그래프 및 위험도 분포 시각화
+- **SHAP** — 규칙 기반 점수 기여도 시각화
+
+### 🔹 AI / NLP
+- **OpenAI API (GPT 계열)** — 고위험 문장 심층 분석
+- **RapidFuzz** — 문장 비교 및 유사도 기반 검사
+- **Trafilatura** — URL 본문 크롤링 및 추출
+
+### 🔹 Document & Report
+- **FPDF / Pillow** — PDF 리포트 생성 및 이미지 처리
+
+### 🔹 Data Processing
+- **pandas / numpy** — 점수 계산 및 테이블 처리
+- **json** — 규칙(ad_rules/report_rules) 로딩 및 설정 처리
+
+### 🔹 Configuration & Security
+- **python-dotenv** — 환경 변수 관리 (.env)
+- **config/** — 규칙 기반 스코어링 JSON 파일 저장
+
+### 🔹 Development & Version Control
+- Git / GitHub
+
 ---
 
 ## ⚙️ 설치 및 실행 (Installation & Usage)
