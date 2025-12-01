@@ -5,7 +5,7 @@
 
 ---
 
-## 🔎 프로젝트 개요
+## 🔎 프로젝트 개요 (Overview)
 
 **VeriAI**는 다음과 같은 워크플로우로 동작합니다.
 
@@ -22,7 +22,7 @@
 
 ---
 
-## 🌍 Project Overview (EN)
+## 🌍 Project Overview (Overview - EN)
 
 **VeriAI** is an AI-assisted document checker for:
 
@@ -38,7 +38,17 @@ It:
 
 ---
 
-## ✨ 주요 기능
+## 🏅 수상 및 성과 (Achievements)
+
+- 🏆 2025 캡스톤 디자인 경진대회 **우수상 수상**
+- 🏆 2025 캡스톤 디자인 경진대회 **우수상 수상**
+- 🌎 일본 학술교류회 **프로젝트 발표 선정**
+
+> 해당 프로젝트는 실무·학술적으로 모두 인정받은 검증된 프로젝트입니다.
+
+---
+
+## ✨ 주요 기능 (Features)
 
 - **📥 입력**
   - 텍스트 직접 입력
@@ -65,7 +75,20 @@ It:
 
 ---
 
-## 📂 프로젝트 구조
+## 📸 스크린샷 (Screenshots)
+
+### 메인 화면
+![main_ui](./assets/main_ui.png)
+
+### 분석 결과 화면
+![result_ui](./assets/result_ui.png)
+
+### PDF 리포트 예시
+![report_example](./assets/report.png)
+
+---
+
+## 📂 프로젝트 구조 (Folder Structure)
 
 ```text
 VeriAI/
@@ -82,10 +105,14 @@ VeriAI/
 ├─ fonts/           # 한글 폰트 파일 (PDF/그래프용)
 ├─ requirements.txt
 ├─ .env             # 환경 변수(로컬용, Git에는 올리지 말 것)
+├─ assets/
+│  ├─main_ui.png
+│  └─result_ui.png
 └─ README.md
 ```
+---
 
-## ⚙️ 설치 (Installation)
+## ⚙️ 설치 및 실행 (Installation & Usage)
 ### 1️⃣ 저장소 클론
 
 ```bash
@@ -115,3 +142,105 @@ pip install -r requiremnets.txt
 - streamlit, openai, python-dotenv
 - pandas, numpy, plotly, matplotlib, shap
 - rapidfuzz, trafilatura, fpdf, pillow 등
+
+### 🔐 환경 변수 설정 (.env)
+
+루트 디렉토리에 `.env` 파일을 만들고 다음과 같이 설정합니다.
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+# 선택 옵션
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_MAX_OUT_TOKENS=1200
+```
+
+- `OPENAI_API_KEY`는 필수입니다.
+- 필요하다면 모델링/토큰 수를 바꿀 수 있습니다.
+
+### 🖥️ 실행 방법
+
+```bash
+streamlit run app.py
+```
+
+기본적으로 브라우저에서 다음 주소로 접속할 수 있습니다.
+- http://localhost:8501
+
+---
+
+## 🧭 사용 방법 (How to Use)
+**1. 분석 모드 선택**
+   사이드바에서 `환경 광고 (Ad)`또는 `일반 보고서 (Report)`를 선택합니다.
+**2. 텍스트/URL 입력**
+   - 텍스트 박스에 분석할 내용을 붙여넣거나
+   - URL을 입력하고 `URL 본문 불러오기` 버튼을 누릅니다.
+**3. 🔎 분석하기 클릭**
+   - 문장이 자동 분할되고, 각 문장에 대한 위험도/등급/점수들이 계산됩니다.
+**4. 결과 탐색**
+   - `개요(표)` 탭: 문장별 점수 테이블 + 검색 기능
+   - `문장별 탐색` 탭: 선택한 문장에 대한 규칙 히트, SHAP Waterfall Plot 등 상세히 분석
+   - `시각화` 탭: 위험도 분포, 구성요소 기여도 바 차트
+**5. LLM 후처리 & 리포트**
+   - `내보내기` 탭에서
+    - Top-K 위험 문장을 기준으로 LLM 분석 실행 (광고/보고서 모드에 맞게)
+    - 전체 결과 CSV 다운로드
+    - PDF 리포트 생성 및 다운로드
+
+---
+
+## ⚖️ 규칙 기반 점수화 개요 (Rule-based Scoring)
+각 문장은 아래와 같은 요소로부터 점수를 계산합니다.
+
+- **Evidence socre 0-16**
+  - 수치 + 단위, 연도, 표준/방법론, 제3자 검증, URL/인증/금액 정보 등
+- **Vagueness score 0-16**
+  - 모호한 ESG 마케팅 용어, 과장 표현, 미래 시제, 그린워싱 핫 키워드 등
+- **Coverage / Temporal / Language / Offset**
+  - "전사/전 제품/전 세계" 식의 범위 과장
+  - 기한·마일스톤 없이 목표만 언급
+  - 과장·허세 표현, 오프셋 의존 등에 대한 위험도
+
+이 피처들을 가중합해 0-100 사이의 **위험도 risk**를 만들고,
+임계값에 따라 **High / Medium / Low** 라벨을 부여합니다.
+
+---
+
+## 🧠 LLM 분석 결과 예시 (LLM Analysis)
+- **환경 광고 모드 Ad**
+  - `risk_reasons`: 모호어, 범위과대, 근거부족, 미래시제·계획부재 등
+  - `explanation`: 왜 그 문장이 그린워싱 위험이 있는지 서술
+  - `evidence_needed`: 필요한 수치/기준연도/범위/외부검증 등
+  - `suggested_queries`: 검증·근거 확보를 위한 검색 쿼리
+- **일반 보고서 모드 Report**
+  - `issues`: weasel wored, 근거/출처 부재, 표본 정보 부족 등
+  - `what_to_add.metrics/method/tables_figures/citations`:
+    어떤 지표·방법·표/그림·인용을 추가해야 하는지 구조화된 제안
+
+이 결과는 PDF 리포트에도 함께 포함됩니다.
+
+---
+
+## 🔧 향후 개선 계획 (Roadmap)
+
+- [ ] URL + PDF + 이미지 OCR 등 입력 채널 확장
+- [ ] 광고/보고서 외에 새로운 분석 모드 추가
+- [ ] AI 기반 자동 요약 및 리포트 템플릿 고도화
+- [ ] 사용자 계정/히스토리 저장 기능
+- [ ] AWS/GCP 기반 웹 서비스 형태로 배포
+- [ ] 규칙 세트(ad_rules, report_rules) 지속 업데이트
+
+
+---
+
+## 📄 라이선스 (License)
+
+이 프로젝트는 **MIT License** 하에 배포됩니다.
+자세한 내용은 `LICENSE` 파일을 참고하세요.
+
+---
+
+## 📌 연락처 (Contact)
+
+- Maintainer: Namho Lee
+- Email: leenamho2000@gmail.com
+- Github: https://github.com/leenamho2000
