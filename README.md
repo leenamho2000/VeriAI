@@ -93,6 +93,7 @@ It:
 VeriAI는 **규칙 기반 위험도 분석 + LLM 심층 분석**을 결합한 하이브리드 구조로 동작합니다.
 
 User Input (Text / URL)
+
 │
 ▼
 **parsers.py**  
@@ -126,6 +127,34 @@ User Input (Text / URL)
 - **llm.py** — OpenAI API 호출 및 JSON 응답 처리  
 - **report.py** — PDF 리포트 생성(FPDF)  
 - **app.py** — Streamlit UI 및 전체 워크플로우 제어
+
+---
+
+## 📚 규칙 설정 파일 (Rule Configuration)
+
+VeriAI의 규칙 기반 점수 계산은 `config` 폴더의 JSON 파일로 분리되어 있습니다.  
+이 파일들을 수정하면 Python 코드를 건드리지 않고도 규칙을 쉽게 확장·조정할 수 있습니다.
+
+- `config/ad_rules.json` — **환경 광고 / ESG 마케팅 문장용 규칙 세트**
+  - 공정거래위원회의 *환경 관련 표시·광고에 관한 심사지침*에서 제시하는 표현 유형과 예시 문구를 참고해,
+    모호한 친환경 표현, 과장·절대 표현, 근거 없는 환경 주장, 탄소중립/상쇄 관련 용어 등을 렉시콘(lexicon)으로 정리했습니다.
+  - 주요 구성
+    - `weights`: evidence, vagueness, coverage, temporal, language, offset_risk 등의 가중치
+    - `thresholds`: High / Medium / Low 등급을 나누는 기준값
+    - `regex`: 숫자+단위, 연도, 범위(scope), URL, 금액, 감축/증가 %, 시점 표현 등의 패턴
+    - `lexicons`: vague / overclaim / future / offset_terms / greenwashing_keywords 등 핵심
+      단어·구 목록
+
+- `config/report_rules.json` — **일반 보고서 / 연구·비즈니스 문장용 규칙 세트**
+  - 연구 방법, 표본, 통계 정보, 인용·참고문헌, 표·그림 언급 등 **증거성 Evidence** 관련 요소에
+    집중해 설계했습니다.
+  - 구조는 `ad_rules.json`과 동일하지만, 논문·보고서 도메인에 맞는 정규식(regex)과 렉시콘을
+    사용합니다.
+    - 예: 인용 형식([1], (Kim, 2024)), DOI, 표·그림(Figure/Table), 통계 지표(p-value, CI, n=…) 등
+      탐지
+
+이 규칙 설정 파일들을 기반으로 `rules.py`가 문장별 Feature를 추출하고,  
+가중치를 적용해 0–100 사이의 최종 위험도 점수를 계산합니다.
 
 ---
 
@@ -165,11 +194,9 @@ User Input (Text / URL)
 ### 1️⃣ 저장소 클론
 
 ```bash
-git clone https://github.com/USERNAME/VeriAI.git
+git clone https://github.com/leenamho2000/VeriAI.git
 cd VerAI
 ```
-
-> `USERNME`은 실제 깃허브 계정으로 변경하세요.
 
 ### 2️⃣ 가상환경 생성 및 활성화 (권장)
 
@@ -184,7 +211,7 @@ source .venv/bin/activate
 ### 3️⃣ 패키지 설치
 
 ```bash
-pip install -r requiremnets.txt
+pip install -r requirements.txt
 ```
 
 `requirements.txt`에는 대략 다음과 같은 패키지들이 포함됩니다:
@@ -220,15 +247,19 @@ streamlit run app.py
 ## 🧭 사용 방법 (How to Use)
 **1. 분석 모드 선택**
    사이드바에서 `환경 광고 (Ad)`또는 `일반 보고서 (Report)`를 선택합니다.
+
 **2. 텍스트/URL 입력**
    - 텍스트 박스에 분석할 내용을 붙여넣거나
    - URL을 입력하고 `URL 본문 불러오기` 버튼을 누릅니다.
+
 **3. 🔎 분석하기 클릭**
    - 문장이 자동 분할되고, 각 문장에 대한 위험도/등급/점수들이 계산됩니다.
+
 **4. 결과 탐색**
    - `개요(표)` 탭: 문장별 점수 테이블 + 검색 기능
    - `문장별 탐색` 탭: 선택한 문장에 대한 규칙 히트, SHAP Waterfall Plot 등 상세히 분석
    - `시각화` 탭: 위험도 분포, 구성요소 기여도 바 차트
+
 **5. LLM 후처리 & 리포트**
    - `내보내기` 탭에서
     - Top-K 위험 문장을 기준으로 LLM 분석 실행 (광고/보고서 모드에 맞게)
@@ -240,7 +271,7 @@ streamlit run app.py
 ## ⚖️ 규칙 기반 점수화 개요 (Rule-based Scoring)
 각 문장은 아래와 같은 요소로부터 점수를 계산합니다.
 
-- **Evidence socre 0-16**
+- **Evidence score 0-16**
   - 수치 + 단위, 연도, 표준/방법론, 제3자 검증, URL/인증/금액 정보 등
 - **Vagueness score 0-16**
   - 모호한 ESG 마케팅 용어, 과장 표현, 미래 시제, 그린워싱 핫 키워드 등
@@ -261,7 +292,7 @@ streamlit run app.py
   - `evidence_needed`: 필요한 수치/기준연도/범위/외부검증 등
   - `suggested_queries`: 검증·근거 확보를 위한 검색 쿼리
 - **일반 보고서 모드 Report**
-  - `issues`: weasel wored, 근거/출처 부재, 표본 정보 부족 등
+  - `issues`: weasel word, 근거/출처 부재, 표본 정보 부족 등
   - `what_to_add.metrics/method/tables_figures/citations`:
     어떤 지표·방법·표/그림·인용을 추가해야 하는지 구조화된 제안
 
