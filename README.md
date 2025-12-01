@@ -88,45 +88,50 @@ It:
 
 ---
 
-## 🧱 시스템 아키텍처 (Architecture)
+## 🏭 시스템 아키텍처 (Architecture)
 
-VeriAI는 **규칙 기반 위험도 분석 + LLM 심층 분석**을 결합한 하이브리드 구조로 동작합니다.
+VeriAI는 **규칙 기반 위험도 분석 + LLM 심층 분석**을 결합한 하이브리드 구조로 동작합니다.  
+전체 흐름은 아래와 같습니다:
 
-User Input (Text / URL)
-
-│
-▼
+**User Input (Text / URL)**  
+↓  
 **parsers.py**  
-- URL 입력 시 본문 크롤링 및 불필요 텍스트 제거  
-│  
-▼  
+- URL 입력 시 본문 크롤링(trafilatura)  
+- HTML/불필요 요소 제거 후 순수 텍스트 추출  
+
+↓  
 **rules.py**  
 - 문장 분리  
 - 규칙 기반 Feature 추출  
-  (evidence, vagueness, coverage, temporal 등)  
-- 0–100 위험도(risk) 계산  
-│  
-▼  
+  (evidence, vagueness, coverage, temporal, language-risk 등)  
+- 가중치를 적용하여 0–100 위험도(risk) 산출  
+- High / Medium / Low 등급 분류  
+
+↓  
 **llm.py**  
-- 위험 상위 K개 문장을 선별하여 LLM 요청  
-- 광고/보고서 모드에 맞는 JSON 심층 분석 결과 생성  
-│  
-▼  
+- 위험도 상위 K개 문장 선별  
+- 광고/보고서 모드에 맞춰 LLM에게 JSON 형식으로 분석 요청  
+- 필요한 증거/모호성/문제점 등을 구조화해 반환  
+
+↓  
 **report.py**  
-- LLM + 규칙 기반 결과 요약  
-- PDF/CSV 리포트 생성  
-│  
-▼  
-**app.py** (Streamlit UI)  
-- 입력 → 분석 → 시각화 → 리포트 다운로드 전체 플로우 제공
+- 규칙 기반 + LLM 분석 결과 종합  
+- PDF/CSV 리포트 생성(FPDF)  
 
-### ✔️ 구성 요소 요약
+↓  
+**app.py (Streamlit UI)**  
+- 텍스트 입력 → 분석 → 시각화(표/그래프/SHAP) → 리포트 다운로드까지  
+  전체 워크플로우를 사용자 인터페이스로 제공
 
-- **parsers.py** — URL 본문 텍스트 크롤링(trafilatura)  
-- **rules.py** — 규칙 기반 점수화(ad_rules.json, report_rules.json 사용)  
-- **llm.py** — OpenAI API 호출 및 JSON 응답 처리  
-- **report.py** — PDF 리포트 생성(FPDF)  
-- **app.py** — Streamlit UI 및 전체 워크플로우 제어
+---
+
+### ✔ 구성 요소 요약
+
+- **parsers.py** — URL 본문 텍스트 크롤링  
+- **rules.py** — 규칙 기반 점수 계산 (ad_rules.json / report_rules.json 사용)  
+- **llm.py** — OpenAI API(gpt-계열) 기반 심층 분석  
+- **report.py** — PDF/CSV 리포트 생성  
+- **app.py** — Streamlit UI 및 전체 프로세스 오케스트레이션
 
 ---
 
